@@ -11,7 +11,7 @@ using Stock.Context;
 namespace Stock.API.Migrations
 {
     [DbContext(typeof(StockContext))]
-    [Migration("20250930170326_CriacaoTabelaProduto")]
+    [Migration("20250930182112_CriacaoTabelaProduto")]
     partial class CriacaoTabelaProduto
     {
         /// <inheritdoc />

@@ -1,7 +1,7 @@
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: sqlserver_ecommerce
+    container_name: stock_db
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=@AdminSql
