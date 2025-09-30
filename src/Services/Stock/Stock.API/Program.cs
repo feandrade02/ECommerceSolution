@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Stock.API.Interfaces;
+using Stock.API.Repositories;
 using Stock.Context;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,7 @@ builder.Services.AddDbContext<StockContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 
 var app = builder.Build();
 
