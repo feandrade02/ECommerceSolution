@@ -298,3 +298,6 @@ obj/
 # Ignore all local history of files
 .history
 .ionide
+
+# Ignore development settings file, which may contain secrets
+appsettings.Development.json
