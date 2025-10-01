@@ -19,7 +19,6 @@ namespace Stock.API.Controllers
             _logger = logger;
         }
 
-        // TODO: Fazer validações
         private bool ValidateProdutoDTO(ProdutoDTO produtoDTO, out List<string> errors)
         {
             errors = new List<string>();
