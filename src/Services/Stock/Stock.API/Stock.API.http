@@ -1,6 +1,13 @@
 @Stock.API_HostAddress = http://localhost:5268
 
-GET {{Stock.API_HostAddress}}/weatherforecast/
+### Obter todos os produtos com paginação
+GET {{Stock.API_HostAddress}}/api/Produto/ObterTodos?page=1&pageSize=5
+Accept: application/json
+
+###
+
+### Obter um produto específico pelo ID
+GET {{Stock.API_HostAddress}}/api/Produto/ObterPorId/1
 Accept: application/json
 
 ###
