@@ -14,6 +14,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 
+// Adiciona o serviço de Health Checks e configura a verificação do SQL Server
+builder.Services.AddHealthChecks()
+    .AddSqlServer(builder.Configuration.GetConnectionString("StandardConnection"));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -26,6 +30,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+// Mapeia o endpoint de Health Checks para a rota /health
+app.MapHealthChecks("/health");
 
 app.MapControllers();
 
