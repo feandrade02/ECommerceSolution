@@ -86,7 +86,16 @@ namespace Stock.API.Controllers
                     page, pageSize, name, ascending, minPrice, maxPrice, minStock, maxStock
                 );
 
-                return Ok(produtos);
+                var produtosModelView = produtos.Select(p => new ProdutoModelView
+                {
+                    Id = p.Id,
+                    Nome = p.Nome,
+                    Descricao = p.Descricao,
+                    Preco = p.Preco,
+                    QuantidadeEstoque = p.QuantidadeEstoque
+                }).ToList();
+
+                return Ok(produtosModelView);
             }
             catch (Exception ex)
             {
@@ -107,7 +116,15 @@ namespace Stock.API.Controllers
                     return NotFound("Produto não encontrado.");
                 }
 
-                return Ok(produto);
+                var produtoModelView = new ProdutoModelView
+                {
+                    Id = produto.Id,
+                    Nome = produto.Nome,
+                    Descricao = produto.Descricao,
+                    Preco = produto.Preco,
+                    QuantidadeEstoque = produto.QuantidadeEstoque
+                };
+                return Ok(produtoModelView);
             }
             catch (Exception ex)
             {
@@ -137,7 +154,16 @@ namespace Stock.API.Controllers
                 await _produtoRepository.AddProduct(produto);
                 await _produtoRepository.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetProductById), new { id = produto.Id }, produto);
+                var produtoModelView = new ProdutoModelView
+                {
+                    Id = produto.Id,
+                    Nome = produto.Nome,
+                    Descricao = produto.Descricao,
+                    Preco = produto.Preco,
+                    QuantidadeEstoque = produto.QuantidadeEstoque
+                };
+
+                return CreatedAtAction(nameof(GetProductById), new { id = produtoModelView.Id }, produtoModelView);
             }
             catch (Exception ex)
             {
@@ -171,7 +197,15 @@ namespace Stock.API.Controllers
                 _produtoRepository.UpdateProduct(produto);
                 await _produtoRepository.SaveChangesAsync();
 
-                return Ok(produto);
+                var produtoModelView = new ProdutoModelView
+                {
+                    Id = produto.Id,
+                    Nome = produto.Nome,
+                    Descricao = produto.Descricao,
+                    Preco = produto.Preco,
+                    QuantidadeEstoque = produto.QuantidadeEstoque
+                };
+                return Ok(produtoModelView);
             }
             catch (Exception ex)
             {

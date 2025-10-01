@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Stock.Domain.Entities
 {
     public class Produto
@@ -13,5 +11,13 @@ namespace Stock.Domain.Entities
         public decimal Preco { get; set; }
 
         public int QuantidadeEstoque { get; set; }
+
+        public bool IsDeleted { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime UpdatedAt { get; set; }
+
+        public DateTime? DeletedAt { get; set; }
     }
 }

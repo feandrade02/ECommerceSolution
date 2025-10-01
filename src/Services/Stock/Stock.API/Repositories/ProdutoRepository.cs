@@ -17,12 +17,18 @@ namespace Stock.API.Repositories
 
         public async Task AddProduct(Produto product)
         {
+            var now = DateTime.UtcNow;
+            product.CreatedAt = now;
+            product.UpdatedAt = now;
             await _context.Produtos.AddAsync(product);
         }
 
         public void DeleteProduct(Produto product)
         {
-            _context.Produtos.Remove(product);
+            var now = DateTime.UtcNow;
+            product.IsDeleted = true;
+            product.DeletedAt = now;
+            UpdateProduct(product);
         }
 
         public async Task<List<Produto>> GetAllProducts(
@@ -36,7 +42,7 @@ namespace Stock.API.Repositories
             int? maxStock = null
         )
         {
-            var query = _context.Produtos.AsNoTracking().AsQueryable();
+            var query = _context.Produtos.AsNoTracking().Where(p => !p.IsDeleted).AsQueryable();
 
             if (!string.IsNullOrEmpty(name))
             {
@@ -70,11 +76,12 @@ namespace Stock.API.Repositories
 
         public async Task<Produto> GetProductById(int id)
         {
-            return await _context.Produtos.FindAsync(id);
+            return await _context.Produtos.FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
         }
 
         public void UpdateProduct(Produto product)
         {
+            product.UpdatedAt = DateTime.UtcNow;
             _context.Produtos.Update(product);
         }
 
