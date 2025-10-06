@@ -3,7 +3,6 @@ using Stock.API.Interfaces;
 using Stock.Context;
 using Stock.Domain.Entities;
 
-
 namespace Stock.API.Repositories
 {
     public class ProdutoRepository : IProdutoRepository
