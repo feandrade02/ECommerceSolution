@@ -10,8 +10,6 @@ namespace Sales.API.Domain.Entities
 
         public decimal ValorTotal { get; set; }
 
-        public DateTime DataCriacao { get; set; }
-
         public StatusPedido Status { get; set; }
 
         public List<ItemPedido> Itens { get; set; } = [];
