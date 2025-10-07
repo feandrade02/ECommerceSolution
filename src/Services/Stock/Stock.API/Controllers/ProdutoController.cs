@@ -46,6 +46,7 @@ namespace Stock.API.Controllers
             int page = 1,
             int pageSize = 10,
             string name = null,
+            string sortBy = null,
             bool ascending = true,
             int? minPrice = null,
             int? maxPrice = null,
@@ -75,6 +76,11 @@ namespace Stock.API.Controllers
                 validationErrors.Messages.Add("O estoque mínimo não pode ser maior que o estoque máximo.");
             }
 
+            if (sortBy.ToLower() != "nome" && sortBy.ToLower() != "preco" && sortBy.ToLower() != "quantidadeestoque")
+            {
+                validationErrors.Messages.Add("O campo de ordenação deve ser 'nome', 'preco' ou 'quantidadeestoque'.");
+            }
+
             if (validationErrors.Messages.Count > 0)
             {
                 return BadRequest(validationErrors);
@@ -82,8 +88,8 @@ namespace Stock.API.Controllers
 
             try
             {
-                var produtos = await _produtoRepository.GetAllProducts(
-                    page, pageSize, name, ascending, minPrice, maxPrice, minStock, maxStock
+                var produtos = await _produtoRepository.GetAllProdutosAsync(
+                    page, pageSize, name, sortBy, ascending, minPrice, maxPrice, minStock, maxStock
                 );
 
                 var produtosModelView = produtos.Select(p => new ProdutoModelView
@@ -109,7 +115,7 @@ namespace Stock.API.Controllers
         {
             try
             {
-                var produto = await _produtoRepository.GetProductById(id);
+                var produto = await _produtoRepository.GetProdutoByIdAsync(id);
 
                 if (produto == null)
                 {
@@ -151,7 +157,7 @@ namespace Stock.API.Controllers
 
             try
             {
-                await _produtoRepository.AddProduct(produto);
+                await _produtoRepository.AddProdutoAsync(produto);
                 await _produtoRepository.SaveChangesAsync();
 
                 var produtoModelView = new ProdutoModelView
@@ -182,7 +188,7 @@ namespace Stock.API.Controllers
 
             try
             {
-                var produto = await _produtoRepository.GetProductById(id);
+                var produto = await _produtoRepository.GetProdutoByIdAsync(id);
 
                 if (produto == null)
                 {
@@ -194,7 +200,7 @@ namespace Stock.API.Controllers
                 produto.Preco = produtoDTO.Preco;
                 produto.QuantidadeEstoque = produtoDTO.QuantidadeEstoque;
 
-                _produtoRepository.UpdateProduct(produto);
+                await _produtoRepository.UpdateProdutoAsync(produto);
                 await _produtoRepository.SaveChangesAsync();
 
                 var produtoModelView = new ProdutoModelView
@@ -219,14 +225,14 @@ namespace Stock.API.Controllers
         {
             try
             {
-                var produto = await _produtoRepository.GetProductById(id);
+                var produto = await _produtoRepository.GetProdutoByIdAsync(id);
 
                 if (produto == null)
                 {
                     return NotFound("Produto não encontrado.");
                 }
 
-                _produtoRepository.DeleteProduct(produto);
+                await _produtoRepository.DeleteProdutoAsync(produto);
                 await _produtoRepository.SaveChangesAsync();
 
                 return NoContent();

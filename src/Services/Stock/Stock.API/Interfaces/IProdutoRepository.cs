@@ -8,6 +8,7 @@ namespace Stock.API.Interfaces
             int page = 1,
             int pageSize = 10,
             string name = null,
+            string sortBy = null,
             bool ascending = true,
             int? minPrice = null,
             int? maxPrice = null,

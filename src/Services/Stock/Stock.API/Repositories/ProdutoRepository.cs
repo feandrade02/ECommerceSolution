@@ -35,6 +35,7 @@ namespace Stock.API.Repositories
             int page = 1,
             int pageSize = 10,
             string name = null,
+            string sortBy = null,
             bool ascending = true,
             int? minPrice = null,
             int? maxPrice = null,
@@ -69,8 +70,14 @@ namespace Stock.API.Repositories
                 query = query.Where(p => p.QuantidadeEstoque <= maxStock.Value);
             }
 
-            query = ascending ? query.OrderBy(p => p.Nome) : query.OrderByDescending(p => p.Nome);
-
+            query = sortBy.ToLower() switch
+            {
+                "nome" => ascending ? query.OrderBy(p => p.Nome) : query.OrderByDescending(p => p.Nome),
+                "preco" => ascending ? query.OrderBy(p => p.Preco) : query.OrderByDescending(p => p.Preco),
+                "quantidadeestoque" => ascending ? query.OrderBy(p => p.QuantidadeEstoque) : query.OrderByDescending(p => p.QuantidadeEstoque),
+                _ => ascending ? query.OrderBy(p => p.CreatedAt) : query.OrderByDescending(p => p.CreatedAt),
+            };
+            
             return await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
