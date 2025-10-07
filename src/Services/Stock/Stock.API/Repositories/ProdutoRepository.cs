@@ -14,23 +14,24 @@ namespace Stock.API.Repositories
             _context = context;
         }
 
-        public async Task AddProduct(Produto product)
+        public async Task AddProdutoAsync(Produto produto)
         {
             var now = DateTime.UtcNow;
-            product.CreatedAt = now;
-            product.UpdatedAt = now;
-            await _context.Produtos.AddAsync(product);
+            produto.CreatedAt = now;
+            produto.UpdatedAt = now;
+            await _context.Produtos.AddAsync(produto);
         }
 
-        public void DeleteProduct(Produto product)
+        public Task DeleteProdutoAsync(Produto produto)
         {
             var now = DateTime.UtcNow;
-            product.IsDeleted = true;
-            product.DeletedAt = now;
-            UpdateProduct(product);
+            produto.IsDeleted = true;
+            produto.DeletedAt = now;
+            _context.Produtos.Update(produto);
+            return Task.CompletedTask;
         }
 
-        public async Task<List<Produto>> GetAllProducts(
+        public async Task<List<Produto>> GetAllProdutosAsync(
             int page = 1,
             int pageSize = 10,
             string name = null,
@@ -73,15 +74,16 @@ namespace Stock.API.Repositories
             return await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
-        public async Task<Produto> GetProductById(int id)
+        public async Task<Produto> GetProdutoByIdAsync(int id)
         {
             return await _context.Produtos.FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
         }
 
-        public void UpdateProduct(Produto product)
+        public Task UpdateProdutoAsync(Produto produto)
         {
-            product.UpdatedAt = DateTime.UtcNow;
-            _context.Produtos.Update(product);
+            produto.UpdatedAt = DateTime.UtcNow;
+            _context.Produtos.Update(produto);
+            return Task.CompletedTask;
         }
 
         public async Task<bool> SaveChangesAsync()

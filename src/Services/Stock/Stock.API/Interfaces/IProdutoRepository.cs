@@ -4,7 +4,7 @@ namespace Stock.API.Interfaces
 {
     public interface IProdutoRepository
     {
-        Task<List<Produto>> GetAllProducts(
+        Task<List<Produto>> GetAllProdutosAsync(
             int page = 1,
             int pageSize = 10,
             string name = null,
@@ -14,10 +14,10 @@ namespace Stock.API.Interfaces
             int? minStock = null,
             int? maxStock = null
         );
-        Task<Produto> GetProductById(int id);
-        Task AddProduct(Produto product);
-        void UpdateProduct(Produto product);
-        void DeleteProduct(Produto product);
+        Task<Produto> GetProdutoByIdAsync(int id);
+        Task AddProdutoAsync(Produto produto);
+        Task UpdateProdutoAsync(Produto produto);
+        Task DeleteProdutoAsync(Produto produto);
         Task<bool> SaveChangesAsync();
     }
 }
