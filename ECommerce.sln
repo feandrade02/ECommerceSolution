@@ -9,17 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{98
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stock", "Stock", "{75590350-2C6C-68DD-10B1-7ED9A5DDB0E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stock.API", "src\Services\Stock\Stock.API\Stock.API.csproj", "{181FACAE-91B7-4A96-B4A1-49C19C522209}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stock.API", "src\Stock\Stock.API\Stock.API.csproj", "{181FACAE-91B7-4A96-B4A1-49C19C522209}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sales", "Sales", "{1F9988FE-75E7-8DC1-637C-D308079B0A39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sales.API", "src\Services\Sales\Sales.API\Sales.API.csproj", "{D3428B18-4D8D-42B0-A092-7DCA081335F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sales.API", "src\Sales\Sales.API\Sales.API.csproj", "{D3428B18-4D8D-42B0-A092-7DCA081335F7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateway", "ApiGateway", "{FCA01246-F2C6-0AA7-D43F-FD13BE0B9D88}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway.Ocelot", "src\ApiGateway\Gateway.Ocelot\Gateway.Ocelot.csproj", "{A020DE85-02E1-4E6A-AC2E-790F3B0C29A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stock.Tests", "src\Services\Stock\Stock.Tests\Stock.Tests.csproj", "{10345439-0B56-4158-9092-2C572BBC8D45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stock.Tests", "src\Stock\Stock.Tests\Stock.Tests.csproj", "{10345439-0B56-4158-9092-2C572BBC8D45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
