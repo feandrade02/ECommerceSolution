@@ -1,13 +1,7 @@
-namespace Sales.API.Domain.Enums
+namespace Sales.API.Domain.Enums;
+
+public enum StatusPedido
 {
-    public enum StatusPedido
-    {
-        Iniciado,
-        PagamentoPendente,
-        Processando,
-        Confirmado,
-        Enviado,
-        Entregue,
-        Cancelado
-    }
+    Confirmado,
+    Cancelado
 }

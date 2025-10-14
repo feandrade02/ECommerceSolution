@@ -1,11 +1,10 @@
-namespace Stock.API.Domain.ModelViews
+namespace Stock.API.Domain.ModelViews;
+
+public record ProdutoModelView
 {
-    public record ProdutoModelView
-    {
-        public int Id { get; set; }
-        public string Nome { get; set; }
-        public string Descricao { get; set; }
-        public decimal Preco { get; set; }
-        public int QuantidadeEstoque { get; set; }
-    }
+    public int Id { get; set; }
+    public string Nome { get; set; }
+    public string Descricao { get; set; }
+    public decimal Preco { get; set; }
+    public int QuantidadeEstoque { get; set; }
 }

@@ -1,16 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Sales.API.Controllers
+namespace Sales.API.Controllers;
+
+[ApiController]
+[Route("/")]
+[ApiExplorerSettings(IgnoreApi = true)]
+public class HomeController : ControllerBase
 {
-    [ApiController]
-    [Route("/")]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public class HomeController : ControllerBase
+    [HttpGet]
+    public IActionResult Get()
     {
-        [HttpGet]
-        public IActionResult Get()
-        {
-            return Ok("Bem-vindo à API de Vendas! Acesse /swagger para ver os endpoints disponíveis.");
-        }
+        return Ok("Bem-vindo à API de Vendas! Acesse /swagger para ver os endpoints disponíveis.");
     }
 }

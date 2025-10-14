@@ -1,7 +1,6 @@
-namespace Stock.API.Domain.ModelViews
+namespace Stock.API.Domain.ModelViews;
+
+public struct ValidationErrors
 {
-    public struct ValidationErrors
-    {
-        public List<string> Messages { get; set; }
-    }
+    public List<string> Messages { get; set; }
 }
