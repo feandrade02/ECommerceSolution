@@ -1,4 +1,4 @@
-namespace Stock.Domain.Entities;
+namespace Stock.API.Domain.Entities;
 
 public class Produto
 {

@@ -1,4 +1,4 @@
-using Stock.Domain.Entities;
+using Stock.API.Domain.Entities;
 
 namespace Stock.API.Domain.Interfaces;
 

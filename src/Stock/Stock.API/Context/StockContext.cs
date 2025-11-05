@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Stock.Domain.Entities;
+using Stock.API.Domain.Entities;
 
-namespace Stock.Context;
+namespace Stock.API.Context;
 
 public class StockContext : DbContext
 {
