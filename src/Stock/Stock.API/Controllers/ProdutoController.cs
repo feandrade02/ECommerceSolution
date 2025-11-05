@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Stock.API.Domain.DTOs;
 using Stock.API.Domain.Interfaces;
 using Stock.API.Domain.ModelViews;
-using Stock.Domain.Entities;
+using Stock.API.Domain.Entities;
 
 namespace Stock.API.Controllers;
 
@@ -10,18 +10,18 @@ namespace Stock.API.Controllers;
 [Route("api/[controller]")]
 public class ProdutoController : ControllerBase
 {
-    private readonly IProdutoRepository _produtoRepository;
+    private readonly IProdutoService _produtoService;
     private readonly ILogger<ProdutoController> _logger;
 
-    public ProdutoController(IProdutoRepository produtoRepository, ILogger<ProdutoController> logger)
+    public ProdutoController(IProdutoService produtoService, ILogger<ProdutoController> logger)
     {
-        _produtoRepository = produtoRepository;
+        _produtoService = produtoService;
         _logger = logger;
     }
 
-    private bool ValidateProdutoDTO(ProdutoDTO produtoDTO, out List<string> errors)
+    private static bool ValidateProdutoDTO(ProdutoDTO produtoDTO, out List<string> errors)
     {
-        errors = new List<string>();
+        errors = [];
 
         if (string.IsNullOrWhiteSpace(produtoDTO.Nome))
         {
@@ -54,7 +54,7 @@ public class ProdutoController : ControllerBase
         int? maxStock = null
     )
     {
-        var validationErrors = new ValidationErrors { Messages = new List<string>() };
+        var validationErrors = new ValidationErrors { Messages = [] };
 
         if (page <= 0)
         {
@@ -96,7 +96,7 @@ public class ProdutoController : ControllerBase
             validationErrors.Messages.Add("O estoque mínimo não pode ser maior que o estoque máximo.");
         }
 
-        if (sortBy != null && sortBy.ToLower() != "nome" && sortBy.ToLower() != "preco" && sortBy.ToLower() != "quantidadeestoque")
+        if (sortBy != null && !string.Equals(sortBy, "nome") && !string.Equals(sortBy, "preco") && !string.Equals(sortBy, "quantidadeestoque"))
         {
             validationErrors.Messages.Add("O campo de ordenação deve ser 'nome', 'preco', 'quantidadeestoque' ou vazio.");
         }
@@ -108,7 +108,7 @@ public class ProdutoController : ControllerBase
 
         try
         {
-            var produtos = await _produtoRepository.GetAllProdutosAsync(
+            var produtos = await _produtoService.GetAllProdutosAsync(
                 page, pageSize, name, sortBy, ascending, minPrice, maxPrice, minStock, maxStock
             );
 
@@ -135,12 +135,9 @@ public class ProdutoController : ControllerBase
     {
         try
         {
-            var produto = await _produtoRepository.GetProdutoByIdAsync(id);
+            var produto = await _produtoService.GetProdutoByIdAsync(id);
 
-            if (produto == null)
-            {
-                return NotFound("Produto não encontrado.");
-            }
+            if (produto == null) return NotFound("Produto não encontrado.");
 
             var produtoModelView = new ProdutoModelView
             {
@@ -177,9 +174,13 @@ public class ProdutoController : ControllerBase
 
         try
         {
-            await _produtoRepository.AddProdutoAsync(produto);
-            await _produtoRepository.SaveChangesAsync();
+            var createdProduto = await _produtoService.AddProdutoAsync(produto);
 
+            if (!createdProduto)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro ao tentar cadastrar o produto no banco de dados.");
+            }
+            
             var produtoModelView = new ProdutoModelView
             {
                 Id = produto.Id,
@@ -189,7 +190,7 @@ public class ProdutoController : ControllerBase
                 QuantidadeEstoque = produto.QuantidadeEstoque
             };
 
-            return CreatedAtAction(nameof(GetProdutoById), new { id = produtoModelView.Id }, produtoModelView);
+            return CreatedAtAction(nameof(GetProdutoById), new { id = produto.Id }, produtoModelView);
         }
         catch (Exception ex)
         {
@@ -208,20 +209,21 @@ public class ProdutoController : ControllerBase
 
         try
         {
-            var produto = await _produtoRepository.GetProdutoByIdAsync(id);
+            var produto = await _produtoService.GetProdutoByIdAsync(id);
 
-            if (produto == null)
-            {
-                return NotFound("Produto não encontrado.");
-            }
+            if (produto == null) return NotFound("Produto não encontrado.");
 
             produto.Nome = produtoDTO.Nome;
             produto.Descricao = produtoDTO.Descricao;
             produto.Preco = produtoDTO.Preco;
             produto.QuantidadeEstoque = produtoDTO.QuantidadeEstoque;
 
-            await _produtoRepository.UpdateProdutoAsync(produto);
-            await _produtoRepository.SaveChangesAsync();
+            var updatedProduto = await _produtoService.UpdateProdutoAsync(produto);
+            
+            if (!updatedProduto)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro ao tentar atualizar o produto no banco de dados.");
+            }
 
             var produtoModelView = new ProdutoModelView
             {
@@ -245,15 +247,16 @@ public class ProdutoController : ControllerBase
     {
         try
         {
-            var produto = await _produtoRepository.GetProdutoByIdAsync(id);
+            var produto = await _produtoService.GetProdutoByIdAsync(id);
 
-            if (produto == null)
+            if (produto == null) return NotFound("Produto não encontrado.");
+
+            var deletedProduto = await _produtoService.DeleteProdutoAsync(produto);
+
+            if (!deletedProduto)
             {
-                return NotFound("Produto não encontrado.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro ao tentar deletar o produto no banco de dados.");
             }
-
-            await _produtoRepository.DeleteProdutoAsync(produto);
-            await _produtoRepository.SaveChangesAsync();
 
             return NoContent();
         }
