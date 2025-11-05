@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Stock.API.Domain.Interfaces;
-using Stock.Context;
-using Stock.Domain.Entities;
+using Stock.API.Context;
+using Stock.API.Domain.Entities;
 
 namespace Stock.API.Repositories;
 
@@ -24,9 +24,8 @@ public class ProdutoRepository : IProdutoRepository
 
     public Task DeleteProdutoAsync(Produto produto)
     {
-        var now = DateTime.UtcNow;
         produto.IsDeleted = true;
-        produto.DeletedAt = now;
+        produto.DeletedAt = DateTime.UtcNow;
         _context.Produtos.Update(produto);
         return Task.CompletedTask;
     }
@@ -70,7 +69,7 @@ public class ProdutoRepository : IProdutoRepository
             query = query.Where(p => p.QuantidadeEstoque <= maxStock.Value);
         }
 
-        query = sortBy.ToLower() switch
+        query = (sortBy ?? string.Empty).ToLower() switch
         {
             "nome" => ascending ? query.OrderBy(p => p.Nome) : query.OrderByDescending(p => p.Nome),
             "preco" => ascending ? query.OrderBy(p => p.Preco) : query.OrderByDescending(p => p.Preco),
