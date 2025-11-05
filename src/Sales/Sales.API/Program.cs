@@ -1,11 +1,10 @@
-using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Sales.API.Context;
 using Sales.API.Domain.Interfaces;
 using Sales.API.Domain.Services;
-using Sales.API.Validation;
 using RabbitMQ.Client;
 using System.Net.Http.Headers;
+using Sales.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,17 +24,14 @@ builder.Services.AddHttpClient("StockAPI", client =>
 });
 
 // Registra as dependências do seu serviço e repositório
-builder.Services.AddScoped<IPedidoRepository, Sales.API.Repositories.PedidoRepository>();
 builder.Services.AddScoped<IPedidoService, PedidoService>();
+builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
 
-// Configura a conexão com o RabbitMQ como um singleton
+// Configura a conexão com o RabbitMQ
 var rabbitMqConnectionString = builder.Configuration.GetConnectionString("RabbitMQ");
 var factory = new ConnectionFactory { Uri = new Uri(rabbitMqConnectionString) };
-using var connection = await factory.CreateConnectionAsync();
+var connection = await factory.CreateConnectionAsync();
 builder.Services.AddSingleton(connection);
-
-// Registra o FluentValidation
-builder.Services.AddValidatorsFromAssemblyContaining<GetAllPedidosDTOValidator>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
