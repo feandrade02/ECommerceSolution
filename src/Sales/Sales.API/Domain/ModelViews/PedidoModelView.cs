@@ -1,4 +1,3 @@
-using Sales.API.Domain.Entities;
 using Sales.API.Domain.Enums;
 
 namespace Sales.API.Domain.ModelViews;
@@ -13,5 +12,5 @@ public record PedidoModelView
 
     public StatusPedido Status { get; set; }
 
-    public List<ItemPedido> Itens { get; set; } = [];
+    public List<ItemPedidoModelView> Itens { get; set; }
 }

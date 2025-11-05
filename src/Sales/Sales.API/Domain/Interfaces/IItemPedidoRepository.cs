@@ -15,14 +15,9 @@ public interface IItemPedidoRepository
         int? minQuantidade = null,
         int? maxQuantidade = null
     );
-
     Task<ItemPedido> GetItemPedidoByIdAsync(int id);
-
     Task AddItemPedidoAsync(ItemPedido itemPedido);
-
     Task UpdateItemPedidoAsync(ItemPedido itemPedido);
-
     Task DeleteItemPedidoAsync(ItemPedido itemPedido);
-
     Task<bool> SaveChangesAsync();
 }

@@ -70,7 +70,7 @@ public class ItemPedidoRepository : IItemPedidoRepository
             query = query.Where(i => i.Quantidade <= maxQuantidade.Value);
         }
 
-        query = sortBy.ToLower() switch
+        query = (sortBy ?? string.Empty).ToLower() switch
         {
             "nomeproduto" => ascending ? query.OrderBy(i => i.NomeProduto) : query.OrderByDescending(i => i.NomeProduto),
             "precounitario" => ascending ? query.OrderBy(i => i.PrecoUnitario) : query.OrderByDescending(i => i.PrecoUnitario),
@@ -89,7 +89,6 @@ public class ItemPedidoRepository : IItemPedidoRepository
     public Task UpdateItemPedidoAsync(ItemPedido itemPedido)
     {
         itemPedido.UpdatedAt = DateTime.UtcNow;
-        _context.ItensPedido.Update(itemPedido);
         return Task.CompletedTask;
     }
 

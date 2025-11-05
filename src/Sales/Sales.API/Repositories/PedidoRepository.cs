@@ -21,15 +21,25 @@ public class PedidoRepository : IPedidoRepository
         pedido.CreatedAt = now;
         pedido.UpdatedAt = now;
         await _context.Pedidos.AddAsync(pedido);
-        // A chamada SaveChangesAsync foi movida para o Service para garantir a atomicidade da operação.
     }
 
     public Task DeletePedidoAsync(Pedido pedido)
     {
-        var now = DateTime.UtcNow;
         pedido.IsDeleted = true;
+        var now = DateTime.UtcNow;
         pedido.DeletedAt = now;
+        pedido.Status = StatusPedido.Cancelado;
         _context.Pedidos.Update(pedido);
+
+        // Garante que os itens também sejam marcados como deletados (soft delete)
+        if (pedido.Itens != null)
+        {
+            foreach (var item in pedido.Itens)
+            {
+                item.IsDeleted = true;
+                item.DeletedAt = now;
+            }
+        }
         return Task.CompletedTask;
     }
 
@@ -38,17 +48,15 @@ public class PedidoRepository : IPedidoRepository
         int pageSize = 10,
         string sortBy = null,
         bool ascending = true,
-        StatusPedido? status = null,
         int? minTotalValue = null,
         int? maxTotalValue = null
     )
     {
-        var query = _context.Pedidos.AsNoTracking().Where(p => !p.IsDeleted).AsQueryable();
-
-        if (status.HasValue)
-        {
-            query = query.Where(p => p.Status == status.Value);
-        }
+        var query = _context.Pedidos
+            .AsNoTracking()
+            .Include(p => p.Itens)
+            .Where(p => !p.IsDeleted)
+            .AsQueryable();
 
         if (minTotalValue.HasValue)
         {
@@ -60,21 +68,20 @@ public class PedidoRepository : IPedidoRepository
             query = query.Where(p => p.ValorTotal <= maxTotalValue.Value);
         }
 
-        if (sortBy.ToLower() == "valortotal")
+        query = (sortBy ?? string.Empty).ToLower() switch
         {
-            query = ascending ? query.OrderBy(p => p.ValorTotal) : query.OrderByDescending(p => p.ValorTotal);
-        }
-        else // Default sorting by CreatedAt
-        {
-            query = ascending ? query.OrderBy(p => p.CreatedAt) : query.OrderByDescending(p => p.CreatedAt);
-        }
+            "valortotal" => ascending ? query.OrderBy(p => p.ValorTotal) : query.OrderByDescending(p => p.ValorTotal),
+            _ => ascending ? query.OrderBy(p => p.CreatedAt) : query.OrderByDescending(p => p.CreatedAt),
+        };
 
         return await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
     }
 
     public async Task<Pedido> GetPedidoByIdAsync(int id)
     {
-        return await _context.Pedidos.FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
+        return await _context.Pedidos
+            .Include(p => p.Itens)
+            .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
     }
 
     public Task UpdatePedidoAsync(Pedido pedido)

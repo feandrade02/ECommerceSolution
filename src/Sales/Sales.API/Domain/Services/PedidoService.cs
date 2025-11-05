@@ -25,16 +25,17 @@ public class PedidoService : IPedidoService
         _logger = logger;
     }
 
-    public async Task<List<Pedido>> GetAllPedidosAsync(GetAllPedidosDTO request)
+    public async Task<List<Pedido>> GetAllPedidosAsync(
+        int page,
+        int pageSize,
+        string sortBy,
+        bool ascending,
+        int? minTotalValue,
+        int? maxTotalValue
+    )
     {
         return await _pedidoRepository.GetAllPedidosAsync(
-            request.Page,
-            request.PageSize,
-            request.SortBy,
-            request.Ascending,
-            request.Status,
-            request.MinTotalValue,
-            request.MaxTotalValue
+            page, pageSize, sortBy, ascending, minTotalValue, maxTotalValue
         );
     }
 
@@ -43,43 +44,42 @@ public class PedidoService : IPedidoService
         return await _pedidoRepository.GetPedidoByIdAsync(id);
     }
 
-    public async Task<Pedido> AddPedidoAsync(PedidoDTO pedidoDTO)
+    // Método auxiliar para obter informações do produto na API de Estoque
+    private async Task<ProdutoInfoDTO> GetProdutoInfo(HttpClient httpClient, int idProduto)
     {
-        if (pedidoDTO.Itens == null || pedidoDTO.Itens.Count == 0)
+        ProdutoInfoDTO produtoInfo;
+        try
         {
-            throw new ArgumentException("O pedido deve conter pelo menos um item.");
+            produtoInfo = await httpClient.GetFromJsonAsync<ProdutoInfoDTO>($"api/Produto/ObterPorId/{idProduto}");
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Erro ao buscar produto com ID {ProdutoId} na API de Estoque.", idProduto);
+            throw new InvalidOperationException($"Não foi possível obter informações do produto com ID {idProduto}.");
         }
 
+        if (produtoInfo == null)
+        {
+            throw new KeyNotFoundException($"Produto com ID {idProduto} não encontrado.");
+        }
+        return produtoInfo;
+    }
+
+    public async Task<Pedido> CreatePedidoFromDTOAsync(PedidoDTO pedidoDTO)
+    {
         var httpClient = _httpClientFactory.CreateClient("StockAPI");
         var itensPedido = new List<ItemPedido>();
         decimal valorTotal = 0;
 
         foreach (var itemDto in pedidoDTO.Itens)
         {
-            // 1. Buscar informações do produto na API de Estoque
-            ProdutoInfoDTO produtoInfo;
-            try
-            {
-                produtoInfo = await httpClient.GetFromJsonAsync<ProdutoInfoDTO>($"api/Produto/ObterPorId/{itemDto.IdProduto}");
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError(ex, "Erro ao buscar produto com ID {ProdutoId} na API de Estoque.", itemDto.IdProduto);
-                throw new InvalidOperationException($"Não foi possível obter informações do produto com ID {itemDto.IdProduto}.");
-            }
+            ProdutoInfoDTO produtoInfo = await GetProdutoInfo(httpClient, itemDto.IdProduto);
 
-            if (produtoInfo == null)
-            {
-                throw new KeyNotFoundException($"Produto com ID {itemDto.IdProduto} não encontrado.");
-            }
-
-            // 2. Validar estoque
             if (produtoInfo.QuantidadeEstoque < itemDto.Quantidade)
             {
                 throw new InvalidOperationException($"Estoque insuficiente para o produto '{produtoInfo.Nome}'. Disponível: {produtoInfo.QuantidadeEstoque}, Solicitado: {itemDto.Quantidade}.");
             }
 
-            // 3. Criar o ItemPedido e calcular o subtotal
             var itemPedido = new ItemPedido
             {
                 IdProduto = itemDto.IdProduto,
@@ -91,20 +91,56 @@ public class PedidoService : IPedidoService
             valorTotal += itemPedido.PrecoUnitario * itemPedido.Quantidade;
         }
 
-        // 4. Criar o Pedido
-        var pedido = new Pedido
+        return new Pedido
         {
             IdCliente = pedidoDTO.IdCliente,
             ValorTotal = valorTotal,
             Status = StatusPedido.Confirmado,
             Itens = itensPedido
         };
+    }
 
-        // 5. Persistir no banco
+    public async Task<bool> AddPedidoAsync(Pedido pedido)
+    {
+        // Publicar evento para a API de Estoque dar baixa nos itens.
+        var evento = new UpdateStockEvent
+        {
+            CorrelationId = Guid.NewGuid(), // Identificador único para esta transação
+            Itens = [.. pedido.Itens.Select(item => new ItemPedidoReference
+            {
+                IdProduto = item.IdProduto,
+                Quantidade = -item.Quantidade
+            })]
+        };
+
+        try
+        {
+            using var channel = await _rabbitConnection.CreateChannelAsync();
+            const string queueName = "update_stock_queue";
+
+            await channel.QueueDeclareAsync(queue: queueName, durable: true, exclusive: false,
+                autoDelete: false, arguments: null);
+            
+            var jsonString = JsonSerializer.Serialize(evento);
+            var body = Encoding.UTF8.GetBytes(jsonString);
+
+            var properties = new BasicProperties
+            {
+                Persistent = true
+            };
+
+            await channel.BasicPublishAsync(exchange: string.Empty, routingKey: queueName, mandatory: true,
+                basicProperties: properties, body: body);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao publicar mensagem do UpdateStockEvent no RabbitMQ.");
+        }
+        _logger.LogInformation("Evento UpdateStockEvent publicado com CorrelationId: {CorrelationId}", evento.CorrelationId);
+
         try
         {
             await _pedidoRepository.AddPedidoAsync(pedido);
-            await _pedidoRepository.SaveChangesAsync();
         }
         catch (DbUpdateException ex)
         {
@@ -116,42 +152,69 @@ public class PedidoService : IPedidoService
             _logger.LogError(ex, "Erro ao persistir pedido no banco de dados.");
             throw new InvalidOperationException("Não foi possível processar o pedido no momento. Tente novamente mais tarde.");
         }
+        
+        return await _pedidoRepository.SaveChangesAsync();
+    }
 
-        // 6. Publicar evento para a API de Estoque dar baixa nos itens.
-        var evento = new PedidoCriadoEvent
+    public async Task<bool> UpdatePedidoAsync(Pedido pedido)
+    {
+        await _pedidoRepository.UpdatePedidoAsync(pedido);
+        return await _pedidoRepository.SaveChangesAsync();
+    }
+
+    public async Task<bool> DeletePedidoAsync(Pedido pedido)
+    {
+        // Publicar evento para a API de Estoque restaurar os itens.
+        var evento = new UpdateStockEvent
         {
-            CorrelationId = Guid.NewGuid(), // Identificador único para esta transação
-            Itens = [.. pedido.Itens.Select(item => new ItemPedidoReferenceDTO
-            {
-                IdProduto = item.IdProduto,
-                Quantidade = item.Quantidade
-            })]
+            CorrelationId = Guid.NewGuid(),
+            Itens = [.. pedido.Itens
+                .Where(item => !item.IsDeleted)
+                .Select(item => new ItemPedidoReference
+                {
+                    IdProduto = item.IdProduto,
+                    Quantidade = item.Quantidade
+                })]
         };
 
         try
         {
             using var channel = await _rabbitConnection.CreateChannelAsync();
+            const string queueName = "update_stock_queue";
 
-            await channel.QueueDeclareAsync(queue: "pedido_criado_queue", durable: true, exclusive: false,
+            await channel.QueueDeclareAsync(queue: queueName, durable: true, exclusive: false,
                 autoDelete: false, arguments: null);
-            
+
             var jsonString = JsonSerializer.Serialize(evento);
             var body = Encoding.UTF8.GetBytes(jsonString);
 
-            var properties = new BasicProperties
-            {
-                Persistent = true
-            };
+            var properties = new BasicProperties { Persistent = true };
 
-            await channel.BasicPublishAsync(exchange: string.Empty, routingKey: "pedido_criado_queue", mandatory: true,
+            await channel.BasicPublishAsync(exchange: string.Empty, routingKey: queueName, mandatory: true,
                 basicProperties: properties, body: body);
+
+            _logger.LogInformation("Evento de restauração de estoque (UpdateStockEvent) publicado com CorrelationId: {CorrelationId}", evento.CorrelationId);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao publicar mensagem do PedidoCriadoEvent no RabbitMQ.");
+            _logger.LogError(ex, "Erro ao publicar mensagem de restauração de estoque no RabbitMQ. A deleção do pedido continuará, mas o estoque pode ficar inconsistente.");
         }
-        _logger.LogInformation("Evento PedidoCriadoEvent publicado com CorrelationId: {CorrelationId}", evento.CorrelationId);
 
-        return pedido;
+        try
+        {
+            await _pedidoRepository.DeletePedidoAsync(pedido);
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "Erro de banco de dados ao excluir o pedido. Verifique a exceção interna para detalhes.");
+            throw new InvalidOperationException("Não foi possível excluir o pedido devido a um problema com o banco de dados.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao excluir pedido do banco de dados.");
+            throw new InvalidOperationException("Não foi possível excluir o pedido no momento. Tente novamente mais tarde.");
+        }
+        
+        return await _pedidoRepository.SaveChangesAsync();
     }
 }
