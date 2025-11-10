@@ -242,7 +242,7 @@ public class ProdutoController : ControllerBase
         }
     }
 
-    [HttpDelete("Deletar/{id}")]
+    [HttpDelete("Excluir/{id}")]
     public async Task<IActionResult> DeleteProduto(int id)
     {
         try

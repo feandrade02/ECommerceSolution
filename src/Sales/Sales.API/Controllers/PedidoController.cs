@@ -194,7 +194,7 @@ public class PedidoController : ControllerBase
         }
     }
 
-    [HttpDelete("Deletar/{id}")]
+    [HttpDelete("Excluir/{id}")]
     public async Task<IActionResult> DeletePedido(int id)
     {
         try
