@@ -14,7 +14,15 @@ builder.Services.AddDbContext<StockContext>(options =>
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Stock API",
+        Version = "v1.0.0",
+        Description = "API para gerenciamento de estoque e produtos"
+    });
+});
 
 // Registra as dependências do seu serviço e repositório
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
@@ -43,8 +51,21 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthorization();
 
-// Mapeia o endpoint de Health Checks para a rota /health
+// Mapeia o endpoint de Health Checks para a rota /health (para uso interno)
 app.MapHealthChecks("/health");
+
+// Endpoint customizado para o Swagger
+app.MapGet("/api/health", async (Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckService healthCheckService) =>
+{
+    var healthReport = await healthCheckService.CheckHealthAsync();
+    return healthReport.Status == Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy
+        ? Results.Ok(new { status = "Healthy", checks = healthReport.Entries.Select(e => new { name = e.Key, status = e.Value.Status.ToString() }) })
+        : Results.StatusCode(503);
+})
+.WithName("HealthCheck")
+.WithTags("Health")
+.Produces(200)
+.Produces(503);
 
 app.MapControllers();
 
