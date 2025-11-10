@@ -34,7 +34,6 @@ var connection = await factory.CreateConnectionAsync();
 builder.Services.AddSingleton(connection);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddControllers(); // A validação automática é habilitada por padrão em [ApiController]
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
