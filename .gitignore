@@ -300,4 +300,4 @@ obj/
 .ionide
 
 # Ignore development settings file, which may contain secrets
-appsettings.Development.json
+**/appsettings.Development.json
