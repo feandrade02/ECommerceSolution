@@ -23,8 +23,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Auth", "Auth", "{B1A2C3D4-E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.API", "src\Auth\Auth.API\Auth.API.csproj", "{C2B3D4E5-F6A7-8901-BCDE-F123456789AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stock.Tests", "src\Stock\Stock.Tests\Stock.Tests.csproj", "{10345439-0B56-4158-9092-2C572BBC8D45}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "src\Contracts\Contracts.csproj", "{D56BED3E-86E3-4255-9516-8F3A52CF4021}"
 EndProject
 Global
