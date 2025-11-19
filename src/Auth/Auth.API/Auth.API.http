@@ -1,0 +1,107 @@
+@Auth.API_HostAddress = http://localhost:5202
+@ContentType = application/json
+
+### ============================================
+### AUTENTICAÇÃO E LOGIN
+### ============================================
+
+### 1. Login - Obter Token JWT
+POST {{Auth.API_HostAddress}}/api/User/Login
+Content-Type: {{ContentType}}
+
+{
+  "email": "admin@example.com",
+  "password": "12345678"
+}
+
+### ============================================
+### GERENCIAMENTO DE USUÁRIOS
+### ============================================
+
+### 2. Cadastrar Novo Usuário
+POST {{Auth.API_HostAddress}}/api/User/Cadastrar
+Content-Type: {{ContentType}}
+
+{
+  "email": "novousuario@exemplo.com",
+  "password": "senha1234",
+  "role": "Admin"
+}
+
+### 3. Obter Todos os Usuários (com paginação)
+GET {{Auth.API_HostAddress}}/api/User/ObterTodos?page=1&pageSize=10
+Accept: {{ContentType}}
+
+### 4. Obter Todos os Usuários (com filtros)
+GET {{Auth.API_HostAddress}}/api/User/ObterTodos?page=1&pageSize=10&email=admin@example.com&role=Admin&sortBy=email&ascending=true
+Accept: {{ContentType}}
+
+### 5. Obter Usuário por ID
+GET {{Auth.API_HostAddress}}/api/User/ObterPorId/1
+Accept: {{ContentType}}
+
+### 6. Atualizar Usuário
+PUT {{Auth.API_HostAddress}}/api/User/Atualizar/1
+Content-Type: {{ContentType}}
+
+{
+  "email": "usuario.atualizado@exemplo.com",
+  "password": "novasenha1234",
+  "role": "Sales"
+}
+
+### 7. Excluir Usuário
+DELETE {{Auth.API_HostAddress}}/api/User/Excluir/1
+Accept: {{ContentType}}
+
+### ============================================
+### HEALTH CHECKS
+### ============================================
+
+### 8. Health Check
+GET {{Auth.API_HostAddress}}/health
+Accept: {{ContentType}}
+
+### 9. Health Check API
+GET {{Auth.API_HostAddress}}/api/health
+Accept: {{ContentType}}
+
+### ============================================
+### EXEMPLOS DE VALIDAÇÃO (Casos de Erro)
+### ============================================
+
+### 10. Login com email inválido
+POST {{Auth.API_HostAddress}}/api/User/Login
+Content-Type: {{ContentType}}
+
+{
+  "email": "emailinvalido",
+  "password": "senha1234"
+}
+
+### 11. Login com senha muito curta
+POST {{Auth.API_HostAddress}}/api/User/Login
+Content-Type: {{ContentType}}
+
+{
+  "email": "usuario@exemplo.com",
+  "password": "123"
+}
+
+### 12. Cadastrar usuário com Role inválida
+POST {{Auth.API_HostAddress}}/api/User/Cadastrar
+Content-Type: {{ContentType}}
+
+{
+  "email": "usuario@exemplo.com",
+  "password": "senha1234",
+  "role": "RoleInvalida"
+}
+
+### ============================================
+### ROLES DISPONÍVEIS
+### ============================================
+### Admin
+### Sales
+### Inventory
+
