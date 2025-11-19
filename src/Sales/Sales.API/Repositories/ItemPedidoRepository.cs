@@ -24,9 +24,8 @@ public class ItemPedidoRepository : IItemPedidoRepository
 
     public Task DeleteItemPedidoAsync(ItemPedido itemPedido)
     {
-        var now = DateTime.UtcNow;
         itemPedido.IsDeleted = true;
-        itemPedido.DeletedAt = now;
+        itemPedido.DeletedAt = DateTime.UtcNow;
         _context.ItensPedido.Update(itemPedido);
         return Task.CompletedTask;
     }
