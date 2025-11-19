@@ -3,11 +3,13 @@ using Stock.API.Domain.DTOs;
 using Stock.API.Domain.Interfaces;
 using Stock.API.Domain.ModelViews;
 using Stock.API.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Stock.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ProdutoController : ControllerBase
 {
     private readonly IProdutoService _produtoService;
@@ -157,6 +159,7 @@ public class ProdutoController : ControllerBase
     }
 
     [HttpPost("Cadastrar")]
+    [Authorize(Roles = "Admin,Stock")]
     public async Task<IActionResult> AddProduto(ProdutoDTO produtoDTO)
     {
         if (!ValidateProdutoDTO(produtoDTO, out var errors))
@@ -200,6 +203,7 @@ public class ProdutoController : ControllerBase
     }
 
     [HttpPut("Atualizar/{id}")]
+    [Authorize(Roles = "Admin,Stock")]
     public async Task<IActionResult> UpdateProduto(int id, ProdutoDTO produtoDTO)
     {
         if (!ValidateProdutoDTO(produtoDTO, out var errors))
@@ -243,6 +247,7 @@ public class ProdutoController : ControllerBase
     }
 
     [HttpDelete("Excluir/{id}")]
+    [Authorize(Roles = "Admin,Stock")]
     public async Task<IActionResult> DeleteProduto(int id)
     {
         try
@@ -255,14 +260,14 @@ public class ProdutoController : ControllerBase
 
             if (!deletedProduto)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro ao tentar deletar o produto no banco de dados.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro ao tentar excluir o produto no banco de dados.");
             }
 
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ocorreu um erro ao tentar deletar o produto.");
+            _logger.LogError(ex, "Ocorreu um erro ao tentar excluir o produto.");
             return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro inesperado no servidor. Tente novamente mais tarde.");
         }
     }
