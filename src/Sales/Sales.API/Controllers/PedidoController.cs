@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sales.API.Domain.DTOs;
 using Sales.API.Domain.Entities;
@@ -8,6 +9,7 @@ namespace Sales.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin,Sales")]
 public class PedidoController : ControllerBase
 {
     private readonly IPedidoService _pedidoService;
@@ -23,7 +25,7 @@ public class PedidoController : ControllerBase
     {
         errors = [];
 
-        if (pedidoDTO is null)
+        if (pedidoDTO == null)
         {
             errors.Add("O pedido não pode ser vazio ou nulo.");
         }
