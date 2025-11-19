@@ -1,0 +1,8 @@
+{
+  "Jwt": {
+    "SecretKey": "YourSecretKeyForJWTTokenGenerationAndValidationMinimum32CharactersLong",
+    "Issuer": "ECommerceGateway",
+    "Audience": "ECommerceMicroservices",
+    "ExpirationMinutes": "60"
+  }
+}

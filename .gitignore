@@ -301,3 +301,6 @@ obj/
 
 # Ignore development settings file, which may contain secrets
 **/appsettings.Development.json
+
+# Ignore shared settings file, which may contain secrets
+sharedsettings.json
