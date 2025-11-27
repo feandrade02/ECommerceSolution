@@ -23,6 +23,8 @@ public class ProdutoControllerTests
         _produtoController = new ProdutoController(_produtoServiceMock.Object, _loggerMock.Object);
     }
 
+    #region GetAllProdutos Tests
+
     [Fact]
     public async Task GetAllProdutos_ShouldReturnBadRequest_WhenPageIsInvalid()
     {
@@ -55,6 +57,10 @@ public class ProdutoControllerTests
         Assert.Equal(produtos[0].Id, modelViews[0].Id);
     }
 
+    #endregion
+
+    #region GetProdutoById Tests
+
     [Fact]
     public async Task GetProdutoById_ShouldReturnNotFound_WhenProdutoDoesNotExist()
     {
@@ -85,6 +91,10 @@ public class ProdutoControllerTests
         var modelView = Assert.IsType<ProdutoModelView>(okResult.Value);
         Assert.Equal(produto.Id, modelView.Id);
     }
+
+    #endregion
+
+    #region AddProduto Tests
 
     [Fact]
     public async Task AddProduto_ShouldReturnBadRequest_WhenDtoIsInvalid()
@@ -117,6 +127,10 @@ public class ProdutoControllerTests
         var createdResult = Assert.IsType<CreatedAtActionResult>(result);
         Assert.Equal(nameof(ProdutoController.GetProdutoById), createdResult.ActionName);
     }
+
+    #endregion
+
+    #region UpdateProduto Tests
 
     [Fact]
     public async Task UpdateProduto_ShouldReturnNotFound_WhenProdutoDoesNotExist()
@@ -169,6 +183,10 @@ public class ProdutoControllerTests
         Assert.Equal(validDto.Preco, produtoModelView.Preco);
     }
 
+    #endregion
+
+    #region DeleteProduto Tests
+
     [Fact]
     public async Task DeleteProduto_ShouldReturnNoContent_WhenServiceSucceeds()
     {
@@ -199,4 +217,6 @@ public class ProdutoControllerTests
         // Assert
         Assert.IsType<NotFoundObjectResult>(result);
     }
+
+    #endregion
 }

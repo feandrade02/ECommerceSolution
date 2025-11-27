@@ -17,6 +17,8 @@ public class ProdutoServiceTests
         _produtoService = new ProdutoService(_produtoRepositoryMock.Object);
     }
 
+    #region GetAllProdutosAsync Tests
+
     [Fact]
     public async Task GetAllProdutosAsync_ShouldCallRepository_WithCorrectParameters()
     {
@@ -59,6 +61,10 @@ public class ProdutoServiceTests
         Assert.Null(await _produtoService.GetAllProdutosAsync(-4, -10, " ", " ", true));
     }
 
+    #endregion
+
+    #region GetProdutoByIdAsync Tests
+
     [Fact]
     public async Task GetProdutoByIdAsync_ShouldReturnProduto_WhenExists()
     {
@@ -95,6 +101,10 @@ public class ProdutoServiceTests
         Assert.Null(await _produtoService.GetProdutoByIdAsync(-1));
     }
 
+    #endregion
+
+    #region AddProdutoAsync Tests
+
     [Fact]
     public async Task AddProdutoAsync_ShouldCallAddAndSave_OnRepository()
     {
@@ -119,6 +129,10 @@ public class ProdutoServiceTests
         Assert.False(await _produtoService.AddProdutoAsync(null));
     }
 
+    #endregion
+
+    #region UpdateProdutoAsync Tests
+
     [Fact]
     public async Task UpdateProdutoAsync_ShouldCallUpdateAndSave_OnRepository()
     {
@@ -142,6 +156,10 @@ public class ProdutoServiceTests
         Assert.False(await _produtoService.UpdateProdutoAsync(null));
     }
 
+    #endregion
+
+    #region DeleteProdutoAsync Tests
+
     [Fact]
     public async Task DeleteProdutoAsync_ShouldCallDeleteAndSave_OnRepository()
     {
@@ -164,6 +182,10 @@ public class ProdutoServiceTests
         // Act & Assert
         Assert.False(await _produtoService.DeleteProdutoAsync(null));
     }
+
+    #endregion
+
+    #region UpdateStockAsync Tests
 
     [Fact]
     public async Task UpdateStockAsync_ShouldReturnFalse_WhenProdutoNotFound()
@@ -197,4 +219,6 @@ public class ProdutoServiceTests
         _produtoRepositoryMock.Verify(r => r.UpdateProdutoAsync(produto), Times.Once);
         _produtoRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
+
+    #endregion
 }
