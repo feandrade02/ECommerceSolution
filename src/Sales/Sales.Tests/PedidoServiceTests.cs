@@ -111,7 +111,7 @@ public class PedidoServiceTests
     }
 
     [Fact]
-    public async task GetAllPedidosAsync_ShouldReturnNull_WhenParametersAreInvalid()
+    public async Task GetAllPedidosAsync_ShouldReturnNull_WhenParametersAreInvalid()
     {
         // Act & Assert
         Assert.Null(await _service.GetAllPedidosAsync(-1, -5, "", true, -2, -7));
