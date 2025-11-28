@@ -40,7 +40,7 @@ public class UpdateStockWorker : IHostedService
         await _channel.BasicConsumeAsync(queue: QueueName, autoAck: false, consumer: consumer);
     }
 
-    private async Task OnMessageReceived(object sender, BasicDeliverEventArgs eventArgs)
+    internal async Task OnMessageReceived(object sender, BasicDeliverEventArgs eventArgs)
     {
         var body = eventArgs.Body.ToArray();
         var message = Encoding.UTF8.GetString(body);
