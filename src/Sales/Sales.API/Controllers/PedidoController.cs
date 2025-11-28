@@ -28,6 +28,7 @@ public class PedidoController : ControllerBase
         if (pedidoDTO == null)
         {
             errors.Add("O pedido não pode ser vazio ou nulo.");
+            return false;
         }
 
         if (pedidoDTO.IdCliente <= 0)
