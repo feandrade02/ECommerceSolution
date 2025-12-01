@@ -350,7 +350,7 @@ public class PedidoServiceTests
             ValorTotal = 100,
             Itens = new List<ItemPedido>
             {
-                new ItemPedido { IdProduto = 1, Quantidade = 2 }
+                new ItemPedido { IdProduto = 1, Quantidade = 2, PrecoUnitario = 50, NomeProduto = "Produto A" }
             }
         };
 
@@ -457,7 +457,7 @@ public class PedidoServiceTests
             ValorTotal = 100,
             Itens = new List<ItemPedido>
             {
-                new ItemPedido { IdProduto = 1, Quantidade = 2, IsDeleted = false }
+                new ItemPedido { IdProduto = 1, Quantidade = 2, IsDeleted = false, PrecoUnitario = 50, NomeProduto = "Produto A" }
             }
         };
 
