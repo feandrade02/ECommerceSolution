@@ -2,18 +2,18 @@
 
 ## 📋 Índice
 
-- [Introdução](#introdução)
+- [Introdução](#introducao)
 - [Arquitetura e Componentes](#arquitetura-e-componentes)
 - [Ferramentas e Tecnologias](#ferramentas-e-tecnologias)
-- [APIs da Solução](#apis-da-solução)
-- [Instalação e Configuração](#instalação-e-configuração)
+- [APIs da Solução](#apis-da-solucao)
+- [Instalação e Configuração](#instalacao-e-configuracao)
 - [Como Executar](#como-executar)
-- [Testes Unitários](#testes-unitários)
-- [Conclusão](#conclusão)
+- [Testes Unitários](#testes-unitarios)
+- [Conclusão](#conclusao)
 
 ---
 
-## 🎯 Introdução
+## <a name="introducao"></a>🎯 Introdução
 
 **ECommerceSolution** é uma aplicação de e-commerce distribuída construída usando arquitetura de microsserviços. A solução implementa os principais domínios de um sistema de comércio eletrônico: **Autenticação**, **Gestão de Estoque** e **Vendas**, todos orquestrados através de um **API Gateway** centralizado.
 
@@ -36,7 +36,7 @@ Esta solução serve como um exemplo prático de implementação de microsservi�
 
 ---
 
-## 🏗️ Arquitetura e Componentes
+## <a name="arquitetura-e-componentes"></a>🏗️ Arquitetura e Componentes
 
 A solução é composta por 7 projetos principais organizados em 4 domínios:
 
@@ -117,7 +117,7 @@ graph TB
 
 ---
 
-## 🛠️ Ferramentas e Tecnologias
+## <a name="ferramentas-e-tecnologias"></a>🛠️ Ferramentas e Tecnologias
 
 ### Framework e Runtime
 | Ferramenta | Versão |
@@ -169,7 +169,7 @@ graph TB
 
 ---
 
-## 📡 APIs da Solução
+## <a name="apis-da-solucao"></a>📡 APIs da Solução
 
 ### 🔐 Auth.API (Porta 5202)
 
@@ -296,7 +296,7 @@ graph TB
 
 ---
 
-## 🚀 Instalação e Configuração
+## <a name="instalacao-e-configuracao"></a>🚀 Instalação e Configuração
 
 ### Pré-requisitos
 
@@ -541,7 +541,7 @@ Se preferir usar uma instalação local do RabbitMQ ao invés de Docker, certifi
 
 ---
 
-## ▶️ Como Executar
+## <a name="como-executar"></a>▶️ Como Executar
 
 ### Opção 1: Executar Todos os Serviços Individualmente
 
@@ -612,7 +612,7 @@ Authorization: Bearer <seu-token-jwt>
 
 ---
 
-## 🧪 Testes Unitários
+## <a name="testes-unitarios"></a>🧪 Testes Unitários
 
 ### Estrutura de Testes
 
@@ -707,7 +707,7 @@ Todos os testes foram implementados seguindo as melhores práticas:
 
 ---
 
-## 📝 Conclusão
+## <a name="conclusao"></a>📝 Conclusão
 
 ### Estado Atual da Solução
 
@@ -804,5 +804,3 @@ Este projeto é um exemplo educacional desenvolvido durante o Bootcamp Avanade -
 ## 🤝 Contribuindo
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
-
----
