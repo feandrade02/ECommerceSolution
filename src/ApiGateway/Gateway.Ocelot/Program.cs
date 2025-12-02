@@ -14,7 +14,7 @@ builder.Configuration
       .SetBasePath(builder.Environment.ContentRootPath)
       .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
 
-// Configure JWT Authentication
+// Configura autenticação JWT
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey não configurada.");
 var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("JWT Issuer não configurado.");
@@ -77,18 +77,18 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Add services to the container.
+// Adiciona serviços ao container.
 builder.Services.AddOcelot(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configura o pipeline de requisições HTTP.
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Ocelot middleware handles gateway routing
+// Middleware do Ocelot gerencia o roteamento do gateway
 await app.UseOcelot();
 
 await app.RunAsync();

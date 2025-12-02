@@ -336,7 +336,7 @@ public class ProdutoRepositoryTests
         var produto = await repository.GetProdutoByIdAsync(1);
         var originalUpdatedAt = produto.UpdatedAt;
         
-        // Wait a bit to ensure time difference
+        // Aguarda um tempo para garantir que o UpdatedAt seja diferente
         await Task.Delay(10);
         
         produto.Nome = "Produto A Atualizado";

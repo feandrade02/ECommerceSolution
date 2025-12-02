@@ -13,15 +13,15 @@ var builder = WebApplication.CreateBuilder(args);
 var sharedSettingsPath = Path.Combine(builder.Environment.ContentRootPath, "../../Common", "sharedsettings.json");
 builder.Configuration.AddJsonFile(sharedSettingsPath, optional: false, reloadOnChange: true);
 
-// Configure DbContext
+// Configura DbContext
 builder.Services.AddDbContext<UsersContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("StandardConnection")));
 
-// Register services
+// Registra serviços
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-// Configure JWT Authentication
+// Configura autenticação JWT
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey não configurada.");
 var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("JWT Issuer não configurado.");
@@ -83,7 +83,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Add services to the container
+// Adiciona serviços ao container
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -124,7 +124,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Add Health Checks
+// Adiciona Health Checks
 var connectionString = builder.Configuration.GetConnectionString("StandardConnection") 
     ?? throw new InvalidOperationException("Connection string 'StandardConnection' não encontrada.");
 builder.Services.AddHealthChecks()
@@ -132,7 +132,7 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
+// Configura o pipeline de requisições HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -144,7 +144,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Map Health Checks
+// Mapeia Health Checks
 app.MapHealthChecks("/health");
 
 // Endpoint customizado para o Swagger

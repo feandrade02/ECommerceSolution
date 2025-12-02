@@ -374,7 +374,7 @@ public class UserRepositoryTests
         var user = await repository.GetUserByIdAsync(1);
         var originalUpdatedAt = user.UpdatedAt;
         
-        // Wait a bit to ensure time difference
+        // Aguarda um tempo para garantir que o UpdatedAt seja diferente
         await Task.Delay(10);
         
         user.Email = "updated@example.com";

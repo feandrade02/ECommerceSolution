@@ -48,7 +48,7 @@ var factory = new ConnectionFactory { Uri = new Uri(rabbitMqConnectionString) };
 var connection = await factory.CreateConnectionAsync();
 builder.Services.AddSingleton(connection);
 
-// Configure JWT Authentication
+// Configura autenticação JWT
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey não configurada.");
 var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("JWT Issuer não configurado.");
@@ -110,7 +110,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Add services to the container.
+// Adiciona serviços ao container.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -157,7 +157,7 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configura o pipeline de requisições HTTP.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
